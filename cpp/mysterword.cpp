@@ -28,6 +28,11 @@ static int		get_nbplayers()
 	return (buffer[0] - '0');
 }
 
+/*
+** Initialise le tableau global "dictionnary" grace à un fichier texte.
+** 
+*/
+
 static bool		init_dictionary()
 {
 	ifstream		is("./dico.txt");
@@ -146,17 +151,40 @@ static string	scramble(string word)
 	return (scrambled);
 }
 
+/*
+** La fonction scramble() mélange les lettres du mot et renvoie le résultat,
+** Puis le joueur est invité à entrer un mot.
+** Il peut aussi entrer "word" pour que le mot s'affiche, ce qui permet de
+** tester que la reconnaissance du mot fonctionne correctement même si
+** on arrive pas à deviner le mot tout seul,
+** ou entrer "hint" pour avoir un indice (la première lettre du mot,
+** puis la suivante, etc).
+*/
+
 static void		play(string word)
 {
 	string	guess;
 	int		nb_tries = MAX_TRY;
+	int		hint_nb = 1;
 
 	string	scrambled = scramble(word);
-	cout << "The mystery word is: " << scrambled << " " << word << "\nYour guess:\n>  ";
+	cout << "The mystery word is: " << scrambled << "\nYour guess:\n";
 	while (--nb_tries >= 0)
 	{
+		cout << "> ";
 		getline(cin, guess);
-		if (!guess.compare(word))
+		if (!guess.compare("word"))
+		{
+			cout << "The word is: " << word << endl;
+			++nb_tries;
+		}
+		else if (!guess.compare("hint"))
+		{
+			cout << word.substr(0, hint_nb) << "\nYou have " << nb_tries
+				<< (nb_tries == 1 ? " try left" : " tries left") << endl;
+			++hint_nb;
+		}
+		else if (!guess.compare(word))
 		{
 			cout << "Well played, you found the word in " << MAX_TRY - nb_tries
 				<< (MAX_TRY - nb_tries == 1 ? " try !" : " tries !") << endl;
@@ -176,6 +204,11 @@ static void		play(string word)
 	}
 }
 
+/*
+** Simplement pour vider le terminal en fonction de l'OS:
+** cls pour windows, clear pour les systemes UNIX
+*/
+
 void		clear()
 {
 	#if defined _WIN32
@@ -186,6 +219,18 @@ void		clear()
 	    system("clear");
 	#endif
 }
+
+/*
+** Tout d'abord, l'initialisation du tableau de mots (qui est une variable
+** globale) à partir du fichier dico.txt.
+** Si cette initialisation rate, par exemple parce que le fichier n'existe pas,
+** Le mode 1 joueur n'est pas disponible
+**
+** Il ne reste plus qu'à proposer le mode de jeu, jouer, et recommencer si
+** les joueurs le veulent. Il est aussi proposé en fin de partie de changer
+** le nombre de joueurs, si le mode solo est disponible (c'est à dire si
+** le dictionnaire a été chargé correctement)
+*/
 
 int				main()
 {
