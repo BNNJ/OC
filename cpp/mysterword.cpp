@@ -3,8 +3,6 @@
 #include <vector>
 #include <cstring>
 #include <ctime>
-#include <thread>         // std::this_thread::sleep_for
-#include <chrono>         // std::chrono::seconds
 
 using namespace std;
 
@@ -30,7 +28,8 @@ static int		get_nbplayers()
 
 /*
 ** Initialise le tableau global "dictionnary" grace à un fichier texte.
-** 
+** Si le fichier n'existe pas, il est donné à l'utilisateur de spécifier un
+** fichier à utiliser, ou de simplement continuer en mode 2 joueurs.
 */
 
 static bool		init_dictionary()
@@ -40,10 +39,13 @@ static bool		init_dictionary()
 
 	if (!is)
 	{
-		cout << "Warning: Failed to open dictionary. 1 player mode unavailable\n"
-			<< "Defaulting to 2 players mode, press enter to continue..." << endl;
-		cin.get();
-		return (false);
+		cout << "Warning: Failed to open dictionary. 1 player mode unavailable.\n"
+			<< "Please specify another file to use as dictionnary,\n"
+			<< "or press ENTER to default to 2 players mode and continue...\n> ";
+		getline(cin, buffer);
+		is.open(buffer, ifstream::in);
+		if (!is)
+			return (false);
 	}
 	while (getline(is, buffer))
 	{
@@ -67,7 +69,12 @@ static string	get_word(int nb_players)
 	if (nb_players == 2)
 	{
 		cout << "Please enter a word for the other player to guess:\n> ";
-		getline(cin, word);
+		do
+		{
+			getline(cin, word);
+			if (word.empty())
+				cout << "You didn't enter a word ! Please do so:\n> ";
+		} while (word.empty());
 		string	buffer = word;
 		memset((void*)buffer.data(), '*', buffer.size());
 		cout << "\33[A\r> " << buffer << endl;
@@ -235,6 +242,7 @@ void		clear()
 int				main()
 {
 	ios::sync_with_stdio(false);
+	clear();
 	bool	keep_playing = true;
 	bool	restart = true;
 	int		nb_players = 2;
