@@ -57,7 +57,7 @@ static int		get_nbplayers()
 
 	cout << "Select game mode (type 1 or 2) :\n\t1: 1 player\n\t2: 2 players\n> ";
 	getline(cin, buffer);
-	while ((buffer[0] != '1' && buffer[0] != '2') || buffer[1] != 0)
+	while ((buffer != "1" && buffer != "2"))
 	{
 		cout << "Invalid game mode. Please enter 1 or 2\n> ";
 		getline(cin, buffer);
@@ -111,32 +111,25 @@ static string	get_word(int nb_players)
 	return (word);
 }
 
-static bool		play_again()
+/*
+** Les arguments sont une question et un return par defaut.
+** L'utilisateur doit répondre à la question par oui ou par non,
+** ou juste appuyer sur entrée pour utiliser la réponse par défaut.
+*/
+
+static bool		ask_user(string question, bool d)
 {
 	string	buffer;
 
-	cout << "Do you want to play again ? (Y/N)\n> ";
+	cout << question << " (Y/N, default " << (d ? "Y)" : "N)") <<"\n> ";
 	getline(cin, buffer);
-	while (strchr("YyNn", buffer[0]) == NULL || buffer.size() > 1)
+	while ((strchr("YyNn", buffer[0]) == NULL || buffer.size() > 1)
+		&& !buffer.empty())
 	{
 		cout << "Invalid answer, please type Y or N\n> ";
 		getline(cin, buffer);
 	}
-	return (buffer[0] == 'Y' || buffer[0] == 'y');
-}
-
-static bool		change_mode()
-{
-	string	buffer;
-
-	cout << "Do you want to change the game mode ? (Y/N)\n> ";
-	getline(cin, buffer);
-	while (strchr("YyNn", buffer[0]) == NULL || buffer[1] != 0)
-	{
-		cout << "Invalid answer, please type Y or N\n> ";
-		getline(cin, buffer);
-	}
-	return (buffer[0] == 'Y' || buffer[0] == 'y');	
+	return (buffer.empty() ? d : buffer[0] == 'Y' || buffer[0] == 'y');
 }
 
 /*
@@ -278,8 +271,9 @@ int				main()
 			nb_players = get_nbplayers();
 		restart = false;
 		play(get_word(nb_players));
-		if ((keep_playing = play_again()) && dict_loaded)
-			restart = change_mode();
+		if ((keep_playing = ask_user("Do you want to play again ?", true))
+			&& dict_loaded)
+			restart = ask_user("Do you want to change the game mode ?", false);
 	}
 	return (EXIT_SUCCESS);
 }
