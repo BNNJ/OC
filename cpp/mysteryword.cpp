@@ -69,6 +69,20 @@ static int		get_nbplayers()
 ** Récupère un mot dans un fichier texte pour le mode 1 joueur,
 ** ou demande à un joueur d'entrer un mot ou une phrase pour le mode 2 joueurs.
 ** Les éventuels espaces en début et/ou fin de string sont supprimés.
+**
+** Pour le mode deux joueurs, le mot est remplacé par des étoiles, pour que
+** l'autre joueur ne puisse pas le voir.
+** C'est fait en utilisant le code \33[A, qui est un code ANSI interprété
+** par le terminal, lui demandant de remonter d'une ligne,
+** puis par le caractère '\r', qui est un retour chariot, remettant le curseur
+** au début de la ligne.
+** Il ne reste ensuite plus qu'à afficher les étoiles par dessus le mot.
+** Pour avoir le bon nombre d'étoiles, j'utilise la fonction memset() qui prend
+** un pointeur vers le premier byte de la zone mémoire à modifier,
+** un byte avec lequel remplir la mémoire et le nombre de bytes à modifier :
+** Le pointeur est obtenu par la méthode .data() de la classe string,
+** le byte est le code ascii de l'ètoile,
+** et le nombre de bytes est la taille de la string à remplacer.
 */
 
 static string	get_word(int nb_players)
@@ -90,9 +104,9 @@ static string	get_word(int nb_players)
 	}
 	else
 		word = dictionary[rand() % dictionary.size()];
-	while (word[0] && word[0] == ' ')
+	while (!word.empty() && word[0] == ' ')
 		word.erase(0, 1);
-	while (word[word.size() - 1] == ' ')
+	while (!word.empty() && word[word.size() - 1] == ' ')
 		word.erase(word.size() - 1, 1);
 	return (word);
 }
@@ -103,7 +117,7 @@ static bool		play_again()
 
 	cout << "Do you want to play again ? (Y/N)\n> ";
 	getline(cin, buffer);
-	while (strchr("YyNn", buffer[0]) == NULL || buffer[1] != 0)
+	while (strchr("YyNn", buffer[0]) == NULL || buffer.size() > 1)
 	{
 		cout << "Invalid answer, please type Y or N\n> ";
 		getline(cin, buffer);
@@ -126,14 +140,15 @@ static bool		change_mode()
 }
 
 /*
-** Mélange les lettres de chaque mot, un par un, en gardant les espaces en place
-** par exemple, "ABCDE 12345" peut devenir "CEDBA 21354"
+** Mélange les lettres de chaque mot, mot par mot,
+** en gardant les espaces en place.
+** par exemple, "ABCDE 12345 abcde" peut devenir "CEDBA 21354 dbcae"
 ** Le mélange est fait de la facon suivante:
 ** 1) calcul de la taille du premier mot de la string word
 ** 		(donc jusqu'à la fin ou jusqu'à un espace)
-** 2) génération d'un nombre n aléatoire entre 0 et la taill du mot
-** 3) ajout de la lettre à l'index n de word à la fin de scrambled
-**		grace à ĺ'operateur += des string
+** 2) génération d'un nombre n aléatoire entre 0 et la taille du mot
+** 3) ajout de la lettre se trouvant l'index n de word à la fin de scrambled
+**		grace à ĺ'operateur += de la classe string
 ** 4) suppression de la lettre dans word grace à la méthode .erase()
 ** 5) si il y a un espace au début de word, on le supprime et on le met
 **		dans scrambled
