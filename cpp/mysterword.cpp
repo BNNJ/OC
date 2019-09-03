@@ -195,6 +195,7 @@ int				main()
 	int		nb_players = 2;
 	bool	dict_loaded = init_dictionary();
 
+	srand(time(NULL));
 	while (keep_playing)
 	{
 		clear();
