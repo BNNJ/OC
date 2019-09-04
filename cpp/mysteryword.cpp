@@ -248,7 +248,7 @@ static void		clear()
 {
 	#if defined _WIN32
 	    system("cls");
-	#elif defined (__LINUX__) || defined(__gnu_linux__) || defined(__linux__)
+	#elif defined (__LINUX__) || defined (__gnu_linux__) || defined (__linux__)
 	    system("clear");
 	#elif defined (__APPLE__)
 	    system("clear");
@@ -271,6 +271,7 @@ int				main()
 {
 	ios::sync_with_stdio(false);
 	clear();
+
 	bool	keep_playing = true;
 	bool	restart = true;
 	int		nb_players = 2;
