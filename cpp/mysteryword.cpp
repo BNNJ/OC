@@ -31,10 +31,23 @@ using namespace std;
 
 vector<string>	dictionary;
 
+/*
+** Vérifie si caractère est un whitespace, c'est à dire un espace,
+** une tabulation, un newline...
+** 
+** En dehors de l'espace, il y a 5 whitespaces, dont les codes ASCII sont
+** compris entre 9 et 13 inclus.
+*/
+
+static bool		is_whitespace(char c)
+{
+	return (c == ' ' || (c >= 9 && c <= 13));
+}
+
 static bool		contains_non_printable(string s)
 {
 	for (size_t i = 0; i < s.size(); ++i)
-		if (s[i] < 32 || s[i] > 126)
+		if ((s[i] < 32 || s[i] > 126) && !is_whitespace(s[i]))
 			return (true);
 	return (false);
 }
@@ -84,7 +97,7 @@ static int		get_nbplayers()
 }
 
 /*
-** Supprime les espaces en début et fin de string, et les espaces conscutifs
+** Supprime les whitespaces en début et fin de string, et les espaces conscutifs
 ** entre deux mots sont réduits à un seul.
 ** La méthode utilisée n'est pas la plus optimale:
 ** Tant que la string n'est pas vide, le premier caractère est vérifié,
@@ -101,23 +114,11 @@ static string	remove_extra_spaces(string w)
 
 	while (!w.empty())
 	{
-		if (w[0] != ' ' || (w[1] != ' ' && w.size() > 1 && !str.empty()))
+		if (!is_whitespace(w[0])
+			|| (!is_whitespace(w[1]) && w.size() > 1 && !str.empty()))
 			str += w[0];
 		w.erase(0, 1);
 	}
-/*
-	size_t	len = w.size();
-	size_t	i = 0;
-
-	while (i < len && w[i] == ' ')
-		++i;
-	while (i < len)
-	{
-		if ((w[i] != ' ') || (w[i + 1] != ' ' && i != len - 1))
-			str += w[i];
-		++i;
-	}
-*/
 	return (str);
 }
 
@@ -137,14 +138,14 @@ static string	remove_extra_spaces(string w)
 ** un pointeur vers le premier byte de la zone mémoire à modifier,
 ** un byte avec lequel remplir la mémoire et le nombre de bytes à modifier :
 ** Le pointeur est obtenu par la méthode .data() de la classe string,
-** le byte est le code ascii de l'ètoile,
+** le byte est le code ascii de l'étoile,
 ** et le nombre de bytes est la taille de la string à remplacer.
 ** J'ai testé cette méthode sous Linux Manjaro et le powershell de Windows 10.
 */
 
 static string	get_word(int nb_players)
 {
-	string					word;
+	string	word;
 
 	if (nb_players == 2)
 	{
@@ -187,9 +188,8 @@ static bool		ask_user(string question, bool d)
 }
 
 /*
-** Mélange les lettres de chaque mot, mot par mot,
-** en gardant les espaces en place.
-** par exemple, "ABCDE 12345 abcde" peut devenir "CEDBA 21354 dbcae"
+** Mélange les lettres de chaque mot, mot par mot, en gardant les espaces en place.
+** Par exemple, "ABCDE 12345 abcde" peut devenir "CEDBA 21354 dbcae"
 ** Le mélange est fait de la facon suivante:
 ** 1) calcul de la taille du premier mot de la string word
 ** 		(donc jusqu'à la fin ou jusqu'à un espace)
