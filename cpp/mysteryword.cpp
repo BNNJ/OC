@@ -97,8 +97,8 @@ static int		get_nbplayers()
 }
 
 /*
-** Supprime les whitespaces en début et fin de string, et les espaces conscutifs
-** entre deux mots sont réduits à un seul.
+** Supprime les whitespaces en début et fin de string, et les whitespace
+** conscutifs entre deux mots sont remplacés par un seul espace.
 ** La méthode utilisée n'est pas la plus optimale:
 ** Tant que la string n'est pas vide, le premier caractère est vérifié,
 ** copié dans une deuxième string si il est valide,
@@ -114,9 +114,10 @@ static string	remove_extra_spaces(string w)
 
 	while (!w.empty())
 	{
-		if (!is_whitespace(w[0])
-			|| (!is_whitespace(w[1]) && w.size() > 1 && !str.empty()))
+		if (is_whitespace(w[0]))
 			str += w[0];
+		else if (!is_whitespace(w[1]) && w.size() > 1 && !str.empty())
+			str += ' ';
 		w.erase(0, 1);
 	}
 	return (str);
