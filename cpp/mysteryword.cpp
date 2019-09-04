@@ -22,8 +22,8 @@ vector<string>	dictionary;
 ** Il s'agit de characteres spéciaux, les retours chariots. Ils sont ajoutés
 ** à la fin de chaque ligne dans les fichiers généré sous windows.
 ** Il faut donc les supprimer avant de stocker le mot dans le tableau
-** A noter que les systemes UNIX utilisent un simple '\n' pour le retour à la
-** ligne, alors que Windows utilise '\r' ET '\n': retour en début de ligne,
+** A noter que les systemes UNIX utilisent un simple '\n' pour le newline,
+** alors que Windows utilise '\r' ET '\n': retour en début de ligne,
 ** puis une nouvelle ligne.
 */
 
@@ -68,7 +68,9 @@ static int		get_nbplayers()
 /*
 ** Récupère un mot dans un fichier texte pour le mode 1 joueur,
 ** ou demande à un joueur d'entrer un mot ou une phrase pour le mode 2 joueurs.
-** Les éventuels espaces en début et/ou fin de string sont supprimés.
+** Les éventuels espaces superflus sont supprimés :
+** En début et fin de phrase, et plusieurs espace consécutifs entre deux mots
+** sont réduits à un seul.
 **
 ** Pour le mode deux joueurs, le mot est remplacé par des étoiles, pour que
 ** l'autre joueur ne puisse pas le voir.
@@ -83,7 +85,21 @@ static int		get_nbplayers()
 ** Le pointeur est obtenu par la méthode .data() de la classe string,
 ** le byte est le code ascii de l'ètoile,
 ** et le nombre de bytes est la taille de la string à remplacer.
+** J'ai testé cette méthode sous Linux Manjaro et le powershell de Windows 10.
 */
+
+static string	remove_extra_spaces(string w)
+{
+	string str;
+
+	while (!w.empty())
+	{
+		if (w[0] != ' ' || (w[1] != ' ' && w.size() > 1 && !str.empty()))
+			str += w[0];
+		w.erase(0, 1);
+	}
+	return (str);
+}
 
 static string	get_word(int nb_players)
 {
@@ -98,16 +114,13 @@ static string	get_word(int nb_players)
 			if (word.empty())
 				cout << "You didn't enter a word ! Please do so:\n> ";
 		} while (word.empty());
+		word = remove_extra_spaces(word);
 		string	buffer = word;
 		memset((void*)buffer.data(), '*', buffer.size());
 		cout << "\33[A\r> " << buffer << endl;
 	}
 	else
-		word = dictionary[rand() % dictionary.size()];
-	while (!word.empty() && word[0] == ' ')
-		word.erase(0, 1);
-	while (!word.empty() && word[word.size() - 1] == ' ')
-		word.erase(word.size() - 1, 1);
+		word = remove_extra_spaces(dictionary[rand() % dictionary.size()]);
 	return (word);
 }
 
