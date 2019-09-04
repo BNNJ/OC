@@ -8,16 +8,18 @@ using namespace std;
 
 #define	MAX_TRY	5
 
-/*
-** Le tableau qui contient les mots du dictionnaire.
-*/
 
-vector<string>	dictionary;
+/* /!\ Lisez le fichier texte joint avant la source s'il vous plait ! /!\ */
 
 /*
 ** Initialise le tableau global "dictionnary" grace à un fichier texte.
 ** Si le fichier n'existe pas, la possibilité est donné à l'utilisateur de
 ** spécifier un fichier à utiliser, ou de simplement continuer en mode 2 joueurs.
+** A noter qu'aucune vérification n'est faite sur le fichier spécifié.
+** En revanche, chaque ligne est vérifiée avant d'être ajoutée au tableau:
+** Si elle contient des caractères non imprimables (ascii < 32 et > 126),
+** elle est ignorée.
+**
 ** Les éventuels '\r' sont supprimés:
 ** Il s'agit de characteres spéciaux, les retours chariots. Ils sont ajoutés
 ** à la fin de chaque ligne dans les fichiers généré sous windows.
@@ -26,6 +28,16 @@ vector<string>	dictionary;
 ** alors que Windows utilise '\r' ET '\n': retour en début de ligne,
 ** puis une nouvelle ligne.
 */
+
+vector<string>	dictionary;
+
+static bool		contains_non_printable(string s)
+{
+	for (size_t i = 0; i < s.size(); ++i)
+		if (s[i] < 32 || s[i] > 126)
+			return (true);
+	return (false);
+}
 
 static bool		init_dictionary()
 {
@@ -46,7 +58,13 @@ static bool		init_dictionary()
 	{
 		if (buffer[buffer.size() - 1] == '\r')
 			buffer.erase(buffer.size() - 1, 1);
-		dictionary.push_back(buffer);
+		if (!contains_non_printable(buffer))
+			dictionary.push_back(buffer);
+	}
+	if (dictionary.empty())
+	{
+		cout << "The dictionary is empty, 1 player mode unavailable.\n"
+			<< "Press ENTER to continue" << endl;
 	}
 	return (true);
 }
