@@ -32,7 +32,7 @@ using namespace std;
 vector<string>	dictionary;
 
 /*
-** Vérifie si caractère est un whitespace, c'est à dire un espace,
+** Vérifie si un caractère est un whitespace, c'est à dire un espace,
 ** une tabulation, un newline...
 ** 
 ** En dehors de l'espace, il y a 5 whitespaces, dont les codes ASCII sont
@@ -306,6 +306,12 @@ static void		clear()
 ** les joueurs le veulent. Il est aussi proposé en fin de partie de changer
 ** le nombre de joueurs, si le mode solo est disponible (c'est à dire si
 ** le dictionnaire a été chargé correctement)
+**
+** sync_with_stdio(false) indique aux fonctions d'iostream de ne pas s'embeter
+** à synchroniser son stream avec celui de stdio.
+** Ne pas le synchroniser peut poser des problèmes si les deux sont utilisés,
+** mais ce n'est pas le cas ici, et l'overhead de cette synchronization
+** à un cout en performances, autant donc la désactiver.
 */
 
 int				main()
