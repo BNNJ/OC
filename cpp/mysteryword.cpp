@@ -84,11 +84,47 @@ static int		get_nbplayers()
 }
 
 /*
+** Supprime les espaces en début et fin de string, et les espaces conscutifs
+** entre deux mots sont réduits à un seul.
+** La méthode utilisée n'est pas la plus optimale:
+** Tant que la string n'est pas vide, le premier caractère est vérifié,
+** copié dans une deuxième string si il est valide,
+** puis supprimé de la string initiale.
+**
+** Ca fait un peu plus d'opérations que nécessaire, mais c'est la méthode la
+** plus claire que j'ai trouvé.
+*/
+
+static string	remove_extra_spaces(string w)
+{
+	string str;
+
+	while (!w.empty())
+	{
+		if (w[0] != ' ' || (w[1] != ' ' && w.size() > 1 && !str.empty()))
+			str += w[0];
+		w.erase(0, 1);
+	}
+/*
+	size_t	len = w.size();
+	size_t	i = 0;
+
+	while (i < len && w[i] == ' ')
+		++i;
+	while (i < len)
+	{
+		if ((w[i] != ' ') || (w[i + 1] != ' ' && i != len - 1))
+			str += w[i];
+		++i;
+	}
+*/
+	return (str);
+}
+
+/*
 ** Récupère un mot dans un fichier texte pour le mode 1 joueur,
 ** ou demande à un joueur d'entrer un mot ou une phrase pour le mode 2 joueurs.
-** Les éventuels espaces superflus sont supprimés :
-** En début et fin de phrase, et plusieurs espace consécutifs entre deux mots
-** sont réduits à un seul.
+** Les éventuels espaces superflus sont supprimés.
 **
 ** Pour le mode deux joueurs, le mot est remplacé par des étoiles, pour que
 ** l'autre joueur ne puisse pas le voir.
@@ -106,19 +142,6 @@ static int		get_nbplayers()
 ** J'ai testé cette méthode sous Linux Manjaro et le powershell de Windows 10.
 */
 
-static string	remove_extra_spaces(string w)
-{
-	string str;
-
-	while (!w.empty())
-	{
-		if (w[0] != ' ' || (w[1] != ' ' && w.size() > 1 && !str.empty()))
-			str += w[0];
-		w.erase(0, 1);
-	}
-	return (str);
-}
-
 static string	get_word(int nb_players)
 {
 	string					word;
@@ -126,19 +149,19 @@ static string	get_word(int nb_players)
 	if (nb_players == 2)
 	{
 		cout << "Please enter a word for the other player to guess:\n> ";
-		do
+		getline(cin, word);
+		while (word.empty())
 		{
+			cout << "You didn't enter a word ! Please do so:\n> ";
 			getline(cin, word);
-			if (word.empty())
-				cout << "You didn't enter a word ! Please do so:\n> ";
-		} while (word.empty());
-		word = remove_extra_spaces(word);
+		}
 		string	buffer = word;
 		memset((void*)buffer.data(), '*', buffer.size());
 		cout << "\33[A\r> " << buffer << endl;
 	}
 	else
-		word = remove_extra_spaces(dictionary[rand() % dictionary.size()]);
+		word = dictionary[rand() % dictionary.size()];
+	word = remove_extra_spaces(word);
 	return (word);
 }
 
