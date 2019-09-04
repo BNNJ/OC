@@ -135,12 +135,15 @@ static string	remove_extra_spaces(string w)
 ** puis par le caractère '\r', qui est un retour chariot, remettant le curseur
 ** au début de la ligne.
 ** Il ne reste ensuite plus qu'à afficher les étoiles par dessus le mot.
-** Pour avoir le bon nombre d'étoiles, j'utilise la fonction memset() qui prend
-** un pointeur vers le premier byte de la zone mémoire à modifier,
-** un byte avec lequel remplir la mémoire et le nombre de bytes à modifier :
-** Le pointeur est obtenu par la méthode .data() de la classe string,
-** le byte est le code ascii de l'étoile,
-** et le nombre de bytes est la taille de la string à remplacer.
+** memset(ptr, c, size) sert à remplir la zone mémoire qui commence à l'adresse
+** pointée par ptr, de taille size, avec le caractère c.
+** Le pointeur est obtenu par la méthode .data() de la class string,
+** le caractère est une étoile,
+** et la taille est obtenue par la méthode .size().
+** Un problème se pose, que je n'ai pas réglé, est le case des tabulations.
+** Elles s'affichent sur un nombre de colonnes variable, et une seul étoile
+** n'est donc pas toujours suffisante pour les camoufler.
+**
 ** J'ai testé cette méthode sous Linux Manjaro et le powershell de Windows 10.
 */
 
