@@ -114,7 +114,7 @@ static string	remove_extra_spaces(string w)
 
 	while (!w.empty())
 	{
-		if (is_whitespace(w[0]))
+		if (!is_whitespace(w[0]))
 			str += w[0];
 		else if (!is_whitespace(w[1]) && w.size() > 1 && !str.empty())
 			str += ' ';
