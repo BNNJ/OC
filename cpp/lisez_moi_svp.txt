@@ -1,0 +1,39 @@
+Bonjour !
+
+Merci de lire ces quelques infos avant de commencer la correction !
+
+J'ai bien conscience que c'est un peu plus complexe que ce qui était demandé, mais j'ai expliqué au maximum ce qui peut poser problème dans les commentaires avant les fonctions.
+
+À propos de l'utilisation du programme:
+
+Le tableau de mots est initialisé au démarrage. Si le fichier dico.txt n'est pas présent dans le dossier, il est donné à l'utilisateur la possibilité d'entrer un autre fichier, ou d'appuyer sur entrée pour continuer, auquel cas le mode 1 joueur n'est pas disponible.
+A noter que la validité du fichier n'est pas vérifiée : Si vous entrez un fichier .jpg ou .zip, il sera ouvert et utilisé. Les mots seront en revanche vérifié avant d'être ajouté au dictionaire. Si aucun mot valide n'est trouvé dans le fichier, le mode 1 joueur devient indisponible et le mode 2 joueurs est seléctioné par défaut.
+Il est donc possible d'utiliser n'importe quel type de fichier (le fichier .cpp du programme par exemple, ou même l'executable) pour générer le dictionnaire, mais il se peut qu'aucun mot valable ne s'y trouve, ou que certains bugs surviennent.
+
+Le mode 1 joueur va donc aller piocher un mot aléatoirement dans le dictionnaire.
+Pour le mode 2 joueurs, il sera demandé à un des joueurs d'entrer un mot.
+Ce mot sera immédiatement remplacé par des étoiles, sinon l'intéret du jeu serait assez limité.
+
+Lors de la phase de jeu, il est demandé au joueur de deviner le mot mystère, il a pour cela 5 essais. Le nombre d'essais est modifiable en remplacant la valeur de MAX_TRY définie au début du fichier source.
+Il aurait éte simple de proposer au joueur de modifier cette valeur directement dans le programme, mais ca aurait alourdi le code qui est déjà pas mal chargé, pour vraiment pas grand chose.
+Il faut bien évidemment recompiler quand on change cette valeur, puisque c'est une constante définie au preprocessing, c'est à dire lors de la compilation.
+
+Il est aussi possible pour le joueur d'entrer "--word" ou "--hint" lors de la phase de jeu:
+--word à pour effet d'afficher le mot à deviner, histoire de pouvoir tester que le programme reconnait bien quand la bonne solution est donnée. C'est seulement pour faciliter la correction.
+--hint sert à obtenir un indice contre un essai : La première lettre du mot est affichée la première fois qu'un indice est demandé, puis les deux premi1ères, les trois premières, etc.
+
+A la fin de la partie, il est proposé au joueur de recommancer, et si il le souhaite, de changer de mode de jeu (si un autre mode de jeu est disponible, c'est à dire si le dictionnaire a bien été chargé)
+
+J'ai testé la compilation et l'execution sous Linux avec gcc 8.3, 
+et sous Windows 10 en compilant à la main avec MinGW, et sous un IDE avec CodeBlocks et Visual Studio. Les trois fonctionnent parfaitement.
+Deux points cependant : La compilation sous un IDE peut rater si le chemin du fichier source comporte des espaces... Attention donc si vous mettez le fichier dans un dossier dont le nom est en deux parties ou plus.
+Ensuite, je ne suis pas habitué à la compilation via les IDE, mais j'ai remarqué une chose :
+Les executables compilés par un IDE, sur un OS sur lequel les librairies n'ont pas été installées, ne se lancent pas en dehors de ĺ'IDE. Je suppose que les librairies sont disponibles en lancant via l'IDE, mais pas en lancant le .exe à la main...
+
+A noter aussi la présence d'un petit bug sous Windows, dont je n'ai pas trouvé l'origine :
+Si le joueur à qui il est demandé de choisir un mot appuie sur entrée sans avoir rien écrit, alors il lui est redemandé d'entrer un mot.
+Si le programme est interrompu à ce moment là, dans le powershell, la ligne invitant le joueur à entrer un mot est répétée plusieurs fois avant la fermeture du programme. Ca ne se produit pas sous Linux.
+
+Si vous avez des questions ou un problème d'execution/compilation, si vous trouvez un bug, ou si vous voulez simplement discuter de code : BNN1974@gmail.com
+
+Bonne partie et bons tests !
