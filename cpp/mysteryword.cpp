@@ -234,10 +234,10 @@ static string	scramble(string word)
 /*
 ** La fonction scramble() mélange les lettres du mot et renvoie le résultat,
 ** Puis le joueur est invité à entrer un mot.
-** Il peut aussi entrer "word" pour que le mot s'affiche, ce qui permet de
+** Il peut aussi entrer "--word" pour que le mot s'affiche, ce qui permet de
 ** tester que la reconnaissance du mot fonctionne correctement même si
 ** on arrive pas à deviner le mot tout seul,
-** ou entrer "hint" pour avoir un indice (la première lettre du mot,
+** ou entrer "--hint" pour avoir un indice (la première lettre du mot,
 ** puis la suivante, etc).
 */
 
@@ -248,27 +248,32 @@ static void		play(string word)
 	int				nb_hint = 1;
 	const string	scrambled = scramble(word);
 
-	cout << "The mystery word is: " << scrambled << "\nYour guess:\n";
+	cout << "The mystery word is: " << scrambled << "\nYour guess:" << endl;
 	while (--nb_tries >= 0)
 	{
 		cout << "> ";
 		getline(cin, guess);
-		if (guess == "word")
-		{
-			cout << "The word is: " << word << endl;
-			++nb_tries;
-		}
-		else if (guess == "hint")
-		{
-			cout << word.substr(0, nb_hint) << "\nYou have " << nb_tries
-				<< (nb_tries == 1 ? " try left" : " tries left") << endl;
-			++nb_hint;
-		}
-		else if (guess == word)
+		if (guess == word)
 		{
 			cout << "Well played, you found the word in " << MAX_TRY - nb_tries
 				<< (MAX_TRY - nb_tries == 1 ? " try !" : " tries !") << endl;
 			break ;
+		}
+		else if (guess.empty())
+		{
+			++nb_tries;
+			cout << "You didn't type anything !" << endl;
+		}
+		else if (guess == "--word")
+		{
+			cout << "The word is: " << word << endl;
+			++nb_tries;
+		}
+		else if (guess == "--hint")
+		{
+			cout << word.substr(0, nb_hint) << "\nYou have " << nb_tries
+				<< (nb_tries == 1 ? " try left" : " tries left") << endl;
+			++nb_hint;
 		}
 		else
 		{
@@ -292,11 +297,11 @@ static void		play(string word)
 static void		clear()
 {
 	#if defined _WIN32
-	    system("cls");
+		system("cls");
 	#elif defined (__LINUX__) || defined (__gnu_linux__) || defined (__linux__)
-	    system("clear");
+		system("clear");
 	#elif defined (__APPLE__)
-	    system("clear");
+		system("clear");
 	#endif
 }
 
